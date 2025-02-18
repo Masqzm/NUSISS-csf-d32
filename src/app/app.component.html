@@ -1,14 +1,21 @@
 <h1>Todo</h1>
 
 <form [formGroup]="form" (submit)="processForm()"> 
+  <!-- <h3><code>Form invalid? Invalid: {{ form.invalid }}</code></h3> -->
+  <h3><code>Form invalid? Invalid: {{ invalid() }}</code></h3>
+  <h3><code>Pristine: {{ form.pristine }}, Dirty: {{ form.dirty }}</code></h3>
   <table>
     <tr>
       <td>Task:</td>
-      <td> <input type="text" size="30" formControlName="taskName"> </td>
+      <!-- Validation with styling -->
+      <!-- <td> <input type="text" size="30" formControlName="taskName" [ngClass]="{'error': form.get('taskName')?.invalid}"> </td> -->
+      <td> <input type="text" size="30" formControlName="taskName" [ngCgit lass]="{'error': isCtrlInvalid('taskName')}"> </td>
+      Valid: {{ form.get('taskName')?.valid }}
     </tr>
     <tr>
       <td>Due:</td>
-      <td> <input type="date" formControlName="dueDate"> </td>
+      <td> <input type="date" formControlName="dueDate" [ngClass]="{'error': isCtrlInvalid('dueDate')}"> </td>
+      Valid: {{ form.get('dueDate')?.valid }}
     </tr>
     <tr>
       <td>Priority:</td>
@@ -22,7 +29,31 @@
     </tr>
     <tr>
       <td></td>
-      <td> <button type="submit">Add</button> </td>
+      <td> <button type="submit" [disabled]="invalid()">Save</button> </td>
+      <td> <button type="button" (click)="addActivity()">Add Activity</button> </td>
     </tr>
   </table>
+
+  <hr>
+
+  @if (activities.controls.length <= 0) {
+    <h3>You are very free!</h3>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Activity</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="activities">
+        @for (act of activities.controls; let idx = $index; track act) {
+          <tr [formGroupName]="idx">
+            <td> {{idx + 1}} </td>
+            <td> <input type="text" size="20" formControlName="activityName"> </td>
+            <td><button type="button" (click)="delActivity(idx)">X</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
 </form>
